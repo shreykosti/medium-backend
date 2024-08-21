@@ -1,0 +1,90 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String   @id @default(uuid())
+  email    String   @unique
+  username String @unique
+  password String
+  posts    Post[]
+  category usercategory[]
+  comments comments[]
+}
+
+model Post {
+  id        String   @id @default(uuid())
+  title     String @unique
+  content   String
+  published Boolean?  @default(false)
+  author    User     @relation(fields: [authorId], references: [id],onDelete: Cascade)
+  authorId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  categories postcategory[]
+  comments comments[]
+  reaction reaction[]
+}
+
+model postcategory{
+  id String @id @default(uuid())
+  webdev Boolean? @default(false)
+  lifestyle Boolean? @default(false)
+  firness Boolean? @default(false)
+  fashion Boolean? @default(false)
+  travel Boolean? @default(false)
+  diy Boolean? @default(false)
+  posts Post @relation(fields: [postId], references: [id],onDelete: Cascade)
+  postId String @unique
+}
+
+model usercategory{
+  id String @id @default(uuid())
+  webdev Boolean? @default(false)
+  lifestyle Boolean? @default(false)
+  firness Boolean? @default(false)
+  fashion Boolean? @default(false)
+  travel Boolean? @default(false)
+  diy Boolean? @default(false)
+  users User @relation(fields: [userId], references: [id],onDelete: Cascade)
+  userId String @unique
+}
+
+model comments{
+  id String @id @default(uuid())
+  content String 
+  upvote Int? @default(0)
+  downvote Int? @default(0)
+  author User @relation(fields: [authorId], references: [id],onDelete: Cascade)
+  authorId String
+  post Post @relation(fields: [postId], references: [id],onDelete: Cascade)
+  postId String
+}
+
+model reaction{
+    id String @id @default(uuid())
+    thumbsup  Int?      @default(0)
+    party  Int?      @default(0)
+    redface  Int?      @default(0)
+    cantsee  Int?      @default(0)
+    thinking  Int?      @default(0)
+    quite  Int?      @default(0)
+    shit  Int?      @default(0)
+    likes     Int?      @default(0)
+    dislikes     Int?      @default(0)
+    posts Post @relation(fields: [postId], references: [id],onDelete: Cascade)
+    postId String @unique
+}
+
+// 👍🥳🤬🫣🤔🤐💩
